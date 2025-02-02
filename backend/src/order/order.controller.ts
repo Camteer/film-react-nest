@@ -1,9 +1,4 @@
-import {
-  Controller,
-  Post,
-  Body,
-  ServiceUnavailableException,
-} from '@nestjs/common';
+import { Controller, Post, Body } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { CreateOrderDTO } from './dto/order.dto';
 
@@ -12,10 +7,6 @@ export class OrderController {
   constructor(private readonly orderService: OrderService) {}
   @Post()
   async createOrder(@Body() orderData: CreateOrderDTO) {
-    try {
-      return this.orderService.createOrder(orderData);
-    } catch (error) {
-      throw new ServiceUnavailableException('Ошибка сервера');
-    }
+    return this.orderService.createOrder(orderData);
   }
 }

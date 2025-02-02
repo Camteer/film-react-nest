@@ -6,10 +6,15 @@ export class FilmsService {
   constructor(private readonly filmsRepository: FilmsRepository) {}
 
   async findAll() {
-    return this.filmsRepository.findAllFilms();
+    const data = await this.filmsRepository.findAllFilms();
+    return data.data;
   }
 
   async findById(id: string) {
-    return this.filmsRepository.findFilmById(id);
+    const data = await this.filmsRepository.findFilmById(id);
+    return {
+      total: data.schedule.length,
+      items: data.schedule,
+    };
   }
 }
