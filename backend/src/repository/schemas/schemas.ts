@@ -1,4 +1,4 @@
-import mongoose, { Schema } from 'mongoose';
+import { Schema } from 'mongoose';
 
 export const ScheduleSchema = new Schema({
   id: { type: String, required: true },
