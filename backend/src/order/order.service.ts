@@ -1,25 +1,38 @@
-import { Injectable, ServiceUnavailableException } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import { BadRequestException } from '@nestjs/common';
-import { FilmsRepository } from '../repository/films.repository';
+import { FilmsRepositoryMongoDB } from '../repository/filmsMongo.repository';
 import { GetTicketDTO, CreateOrderDTO } from './dto/order.dto';
+import { FilmsRepositoryPostgres } from 'src/repository/filmsPostgres.repository';
+import { AppConfig } from 'src/app.config.provider';
 
 @Injectable()
 export class OrderService {
-  constructor(private readonly filmsRepository: FilmsRepository) {}
+  constructor(
+    @Inject('CONFIG') private readonly config: AppConfig,
+    private readonly filmsRepositoryMongo: FilmsRepositoryMongoDB,
+    private readonly filmsRepositoryPostgres: FilmsRepositoryPostgres,
+  ) {}
 
   async createOrder(
     orderData: CreateOrderDTO,
   ): Promise<{ items: GetTicketDTO[]; total: number }> {
     try {
       const tickets = orderData.tickets;
+      const db =
+        this.config.options.driver == 'mongodb'
+          ? this.filmsRepositoryMongo
+          : this.filmsRepositoryPostgres;
 
       for (const ticket of tickets) {
-        const film = await this.filmsRepository.findFilmById(ticket.film);
-        const scheduleIndex =
-          await this.filmsRepository.findScheduleIndexInFilm(
-            ticket.film,
-            ticket.session,
-          );
+        const film = await db.findFilmById(ticket.film);
+        const scheduleIndex = await db.findScheduleIndexInFilm(
+          ticket.film,
+          ticket.session,
+        );
 
         const place = `${ticket.row}:${ticket.seat}`;
 
@@ -29,11 +42,7 @@ export class OrderService {
           );
         }
 
-        this.filmsRepository.updateFilmSessions(
-          ticket.film,
-          scheduleIndex,
-          place,
-        );
+        db.updateFilmSessions(ticket.film, scheduleIndex, place);
       }
 
       return { items: tickets, total: tickets.length };

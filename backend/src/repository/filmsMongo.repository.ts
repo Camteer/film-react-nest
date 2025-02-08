@@ -1,43 +1,21 @@
 import {
+  Inject,
   Injectable,
   NotFoundException,
   ServiceUnavailableException,
 } from '@nestjs/common';
-import mongoose, { Schema } from 'mongoose';
+import { Model } from 'mongoose';
 
 import { GetFilmDTO, GetFilmsDTO } from '../films/dto/films.dto';
-
-const ScheduleSchema = new Schema({
-  id: { type: String, required: true },
-  daytime: { type: Date, required: true },
-  hall: { type: Number, required: true },
-  rows: { type: Number, required: true },
-  seats: { type: Number, required: true },
-  price: { type: Number, required: true },
-  taken: { type: [String], required: true },
-});
-
-const FilmSchema = new Schema({
-  id: { type: String, required: true },
-  rating: { type: Number, required: true },
-  director: { type: String, required: true },
-  tags: { type: [String], required: true },
-  image: { type: String, required: true },
-  cover: { type: String, required: true },
-  title: { type: String, required: true },
-  about: { type: String, required: true },
-  description: { type: String, required: true },
-  schedule: { type: [ScheduleSchema], required: true },
-});
 
 interface Response<Type> {
   data: Type | null;
 }
 
-const Film = mongoose.model('Film', FilmSchema);
-
 @Injectable()
-export class FilmsRepository {
+export class FilmsRepositoryMongoDB {
+  constructor(@Inject('FILM') private filmsRepository: Model<GetFilmDTO>) {}
+
   private getFilmFromDataBaseFn(): (filmDataBase: GetFilmDTO) => GetFilmDTO {
     return (root) => {
       return {
@@ -57,7 +35,7 @@ export class FilmsRepository {
 
   async findAllFilms(): Promise<Response<GetFilmsDTO>> {
     try {
-      const items = await Film.find({});
+      const items = await this.filmsRepository.find({});
       if (items.length === 0) {
         throw new NotFoundException(`Фильмы не найдены`);
       }
@@ -74,7 +52,7 @@ export class FilmsRepository {
 
   async findFilmById(id: string): Promise<GetFilmDTO> {
     try {
-      const film = await Film.findOne({ id });
+      const film = await this.filmsRepository.findOne({ id });
       if (!film) {
         throw new NotFoundException(`Фильм с таким Id ${id} не найден`);
       }
@@ -103,7 +81,7 @@ export class FilmsRepository {
     place: string,
   ) {
     try {
-      const film = await Film.findOne({ id: filmId });
+      const film = await this.filmsRepository.findOne({ id: filmId });
       const schedule = film.schedule[scheduleIndex];
       schedule.taken.push(place);
       await film.save();
