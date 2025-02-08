@@ -1,6 +1,7 @@
 import { Film } from './entities/film.entity';
 import { AppConfig } from '../app.config.provider';
-import { GetFilmDTO } from 'src/films/dto/films.dto';
+
+import { FilmSchema } from './schemas/schemas';
 
 
 export const FilmsProvider = {
@@ -10,7 +11,7 @@ export const FilmsProvider = {
     if (config.options.driver === 'postgres') {
       return connection.getRepository(Film);
     } else if (config.options.driver === 'mongodb') {
-      return connection.model('Film', GetFilmDTO);
+      return connection.model('Film', FilmSchema);
     }
   },
 };
