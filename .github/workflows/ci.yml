@@ -1,0 +1,51 @@
+name: CI
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+on:
+  push:
+    branches:
+      - review
+
+  pull_request:
+    branches:
+      - review
+      - main
+
+jobs: 
+    build-and-publish-latest:
+        runs-on: ubuntu-latest
+        steps:
+
+        - uses: actions/checkout@v4 
+
+        - name: Log in to the Container registry
+          uses: docker/login-action@v3
+          with:
+            registry: ${{ env.REGISTRY }}
+            username: ${{ github.actor }}
+            password: ${{ secrets.GITHUB_TOKEN }}
+
+        - name: Extract metadata (tags, labels) for Docker
+          id: meta
+          uses: docker/metadata-action@3
+          with:
+            images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+        - name: Build and push Backend Docker image
+          uses: docker/build-push-action@v3
+          with:
+            context: ./backend
+            file: ./backend/Dockerfile
+            push: true
+            tags: ${{ env.REGISTRY }}/${{ github.repository }}/backend:latest
+            labels: ${{ steps.meta.outputs.labels }} 
+
+        - name: Build and push Front Docker image
+          uses: docker/build-push-action@v3
+          with:
+            context: ./frontend
+            file: ./frontend/Dockerfile
+            push: true
+            tags: ${{ env.REGISTRY }}/${{ github.repository }}/frontend:latest
+            labels: ${{ steps.meta.outputs.labels }} 
