@@ -8,8 +8,10 @@ import { FilmsController } from './films/films.controller';
 import { FilmsService } from './films/films.service';
 import { OrderController } from './order/order.controller';
 import { OrderService } from './order/order.service';
-import { FilmsRepository } from './repository/films.repository';
-import { databaseProvider } from './database.provider';
+import { FilmsRepositoryMongoDB } from './repository/filmsMongo.repository';
+import { FilmsRepositoryPostgres } from './repository/filmsPostgres.repository';
+import { DatabaseModule } from './database/database.module';
+import { FilmsProvider } from './repository/films.repository.provider';
 
 @Module({
   imports: [
@@ -22,15 +24,16 @@ import { databaseProvider } from './database.provider';
       rootPath: path.join(__dirname, '..', 'public'),
       renderPath: '/content/afisha/',
     }),
+    DatabaseModule,
   ],
   controllers: [FilmsController, OrderController],
   providers: [
     configProvider,
-    databaseProvider,
-
+    FilmsRepositoryMongoDB,
+    FilmsRepositoryPostgres,
     FilmsService,
     OrderService,
-    FilmsRepository,
+    FilmsProvider,
   ],
 })
 export class AppModule {}
