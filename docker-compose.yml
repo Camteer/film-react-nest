@@ -1,7 +1,7 @@
 services:
 
   backend:
-    image: 'ghcr.io/${OWNER}/film-react-nest-backend:latest'
+    image: 'ghcr.io/${OWNER}/film-react-nest/backend:latest'
     container_name: backend
     depends_on:
       - postgres
@@ -12,7 +12,7 @@ services:
     restart: unless-stopped
 
   frontend:
-    image: 'ghcr.io/${OWNER}/film-react-nest-frontend:latest'
+    image: 'ghcr.io/${OWNER}/film-react-nest/frontend:latest'
     container_name: frontend
     networks:
       - web
@@ -57,16 +57,7 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
       - frontend_dist:/var/www/frontend:ro
-      - ./certbot/www/:/var/www/certbot/:ro
-      - ./certbot/conf/:/etc/letsencrypt/:ro
 
-  certbot:
-    image: certbot/certbot:latest
-    networks:
-      - web
-    volumes:
-      - ./certbot/www/:/var/www/certbot/:rw
-      - ./certbot/conf/:/etc/letsencrypt/:rw
       
 networks:
   web:
