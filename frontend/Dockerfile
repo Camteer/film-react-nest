@@ -1,12 +1,12 @@
 
-FROM node:20-alpine 
+FROM node:20-alpine
 
 WORKDIR /app
 
-COPY package*.json ./
+COPY package.json package-lock.json ./
 
-RUN npm i
+RUN npm ci
 
 COPY . .
 
-CMD ["npm", "run", "build"]
+RUN npm run build 
