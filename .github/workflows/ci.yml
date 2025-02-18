@@ -26,11 +26,8 @@ jobs:
             username: ${{ github.actor }}
             password: ${{ secrets.GITHUB_TOKEN }}
 
-        - name: Extract metadata (tags, labels) for Docker
-          id: meta
-          uses: docker/metadata-action@3
-          with:
-            images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        - name: Setup Buildx
+          uses: docker/setup-buildx-action@v3
 
         - name: Build and push Backend Docker image
           uses: docker/build-push-action@v3
