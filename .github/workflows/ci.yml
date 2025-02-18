@@ -35,7 +35,7 @@ jobs:
             context: ./backend
             file: ./backend/Dockerfile
             push: true
-            tags: ${{ env.REGISTRY }}/camter/film-react-nest/backend:latest
+            tags: ${{ env.REGISTRY }}/camteer/film-react-nest/backend:latest
             labels: ${{ steps.meta.outputs.labels }} 
 
         - name: Build and push Front Docker image
@@ -44,5 +44,5 @@ jobs:
             context: ./frontend
             file: ./frontend/Dockerfile
             push: true
-            tags: ${{ env.REGISTRY }}/camter/film-react-nest/frontend:latest
+            tags: ${{ env.REGISTRY }}/camteer/film-react-nest/frontend:latest
             labels: ${{ steps.meta.outputs.labels }} 
