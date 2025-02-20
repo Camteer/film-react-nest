@@ -6,7 +6,7 @@ import {
 import { BadRequestException } from '@nestjs/common';
 import { FilmsRepositoryMongoDB } from '../repository/filmsMongo.repository';
 import { GetTicketDTO, CreateOrderDTO } from './dto/order.dto';
-import { FilmsRepositoryPostgres } from 'src/repository/filmsPostgres.repository';
+import { FilmsRepositoryPostgres } from '../repository/filmsPostgres.repository';
 import { AppConfig } from 'src/app.config.provider';
 
 @Injectable()
